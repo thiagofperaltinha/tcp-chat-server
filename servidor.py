@@ -1,5 +1,5 @@
 import socket
-
+from utils import verificar_msg_enviada, verificar_msg_recebida
 ip = '127.0.0.1'
 port = 3000
 
@@ -16,21 +16,15 @@ conn.send(b"Welcome to my TCP server, client number 1!\n A")
 
 while True:
     mensagem_recebida = conn.recv(1024).decode()  # receives what the user sends (up to 1024 bytes)
-    
-    if mensagem_recebida == "exit chat":  # if the received message is "sair chat", it breaks the loop and ends the chat
+    if verificar_msg_recebida(mensagem_recebida):
         print("Connection closed by the client.")
         break
     
     print("Client: ", mensagem_recebida)  # displays the message sent by the client
     
-    # If client requests services, show a service message
-    conn.send("You have accessed a chat server. Soon, new clients will be added to interact with you!".encode()) if mensagem_recebida == "Serviços" else None
-
     mensagem_enviada = input("You: ")
-    if mensagem_enviada == "exit chat":
-        print("Connection closed by the server.")
+    if verificar_msg_enviada(conn, mensagem_enviada):
         break
-    
     conn.send(mensagem_enviada.encode())
 
 conn.close()
