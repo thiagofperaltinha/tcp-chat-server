@@ -1,4 +1,5 @@
 import socket
+from utils import verificar_msg_enviada, verificar_msg_recebida
 
 ip = '127.0.0.1'  # localhost
 port = 3000
@@ -16,20 +17,12 @@ print("Type <Service>: to know which services our server provides.\n", "Type <ex
 
 while True:
     mensagem_enviada = input("You: ")
-    
-    if mensagem_enviada == "exit chat":  # exit command
-        mensagem_saida = input("Are you sure you want to end this chat? To confirm type: <yes> ")
-        if mensagem_saida == "yes":  # user confirmed they want to quit
-            print("Connection closed.")
-            break
-        else:  # user chose not to quit
-            continue
-    else:
-        s.send(mensagem_enviada.encode())  # send the message to the server
-    
+    if verificar_msg_enviada(s, mensagem_enviada):
+        break
+    s.send(mensagem_enviada.encode())
+
     mensagem_recebida = s.recv(1024).decode()  # receive response from the server
-    
-    if mensagem_recebida == "exit chat":  # server ended the chat
+    if verificar_msg_recebida(mensagem_recebida):
         print("Connection closed by the server.")
         break
     
