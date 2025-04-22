@@ -46,14 +46,14 @@ def receber_mensagens(s):
 def comandos(mensagem_recebida, s):
     msg = mensagem_recebida.lower()
 
-    if msg == "<Service>":
+    if msg == "<service>":
         resposta = "You have accessed a chat server. Soon, new clients will be added to interact with you!"
         try:
             s.send(resposta.encode())
         except:
             print("Erro ao exibir mensagem de Serviços")
             
-    elif msg == "<Help>":
+    elif msg == "<help>":
         with print_lock:
             print("\n📄 Available commands:")
             print("  - exit chat : ends the conversation.")
