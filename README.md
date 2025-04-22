@@ -6,8 +6,8 @@ Um projeto simples de **chat em tempo real** utilizando **Python** com **sockets
 
 - Comunicação bidirecional entre cliente e servidor
 - Troca de mensagens em tempo real
-- Comando especial `sair chat` para encerrar a conversa
-- Mensagem de boas-vindas e resposta a comandos como `Serviços`
+- Comando especial `<exit chat>` para encerrar a conversa
+- Mensagem de boas-vindas e resposta a comandos como `<Service>`
 
 ## 🛠 Tecnologias Utilizadas
 
@@ -23,13 +23,13 @@ Um projeto simples de **chat em tempo real** utilizando **Python** com **sockets
 
 🔧 Melhorias Futuras
 
-- [ ] Permitir múltiplos clientes se conectarem ao mesmo tempo (uso de threads)
+- [x] Permitir múltiplos clientes se conectarem ao mesmo tempo (uso de threads)
 - [ ] Interface gráfica (GUI) com Tkinter ou PyQt
 - [ ] Criptografia básica das mensagens com SSL ou biblioteca `cryptography`
 - [ ] Registro de logs de conversas
-- [ ] Comando `/help` com lista de funcionalidades disponíveis
-- [ ] Suporte a nomes de usuário personalizados
-- [ ] Mensagens de sistema (ex: entrada/saída de usuários)
+- [x] Comando `/help` com lista de funcionalidades disponíveis
+- [x] Suporte a nomes de usuário personalizados
+- [x] Mensagens de sistema (ex: entrada/saída de usuários)
 - [ ] Melhor tratamento de erros e reconexão automática
 - [ ] Implementação da versão UDP para fins comparativos
 
@@ -43,8 +43,8 @@ A simple real-time chat project using Python with TCP sockets.
 
 - Bidirectional communication between client and server
 - Real-time message exchange
-- Special command `sair chat` to end the conversation
-- Welcome message and response to commands like `Serviços`
+- Special command ` <exit chat> ` to end the conversation
+- Welcome message and response to commands like ` <Service> `
 
 🛠 Technologies Used
 
@@ -71,13 +71,13 @@ A simple real-time chat project using Python with TCP sockets.
 
 🔧 Future Improvements
 
-- [ ] Allow multiple clients simultaneously (with threading)
+- [x] Allow multiple clients simultaneously (with threading)
 - [ ] GUI interface using Tkinter or PyQt
 - [ ] Basic encryption with SSL or `cryptography` lib
 - [ ] Chat log registration
-- [ ] `/help` command for available features
-- [ ] Support for custom usernames
-- [ ] System messages (user joined/left notifications)
+- [x] `/help` command for available features
+- [x] Support for custom usernames
+- [x] System messages (user joined/left notifications)
 - [ ] Better error handling and auto-reconnection
 - [ ] Implement a UDP version for learning comparison
 
