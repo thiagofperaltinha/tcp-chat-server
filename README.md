@@ -6,8 +6,8 @@ Um projeto simples de **chat em tempo real** utilizando **Python** com **sockets
 
 - Comunicação bidirecional entre cliente e servidor
 - Troca de mensagens em tempo real
-- Comando especial `exit chat` para encerrar a conversa
-- Mensagem de boas-vindas e resposta a comandos como `Service`
+- Comando especial `<exit chat>` para encerrar a conversa
+- Mensagem de boas-vindas e resposta a comandos como `<Service>`
 
 ## 🛠 Tecnologias Utilizadas
 
