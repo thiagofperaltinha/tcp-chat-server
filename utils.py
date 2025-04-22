@@ -35,13 +35,13 @@ def receber_mensagens(s):
             if verificar_msg_recebida(mensagem_recebida):
                 break
             with print_lock:
-                
                 print(f"\nServer: {mensagem_recebida}")
                 print("You: ", end="", flush=True)
         except:
             if not encerrando:
                 print("Error receiving message.")
             break
+        
 # Método responsável por exibir as mensagens automaticas correspondentes aos comandos utilizados no servidor
 def comandos(mensagem_recebida, s):
     msg = mensagem_recebida.lower()
@@ -62,16 +62,16 @@ def comandos(mensagem_recebida, s):
             
             
 def user_name (nome_usuario, nomes_proibidos, nome_clientes):
-        if (nome_usuario in nomes_proibidos):
-            novo_nome = input("Digite um nome de usuário válido: ")
-            return user_name(novo_nome, nomes_proibidos, nome_clientes)
-        elif nome_usuario in nome_clientes:
-            print("Nome em uso, tente novamente.")
-            novo_nome = input("Digite um nome de usuário válido: ")
-            return user_name(novo_nome, nomes_proibidos, nome_clientes)
-        else:
-            nome_clientes.append(nome_usuario)
-            return nome_usuario
+    if (nome_usuario in nomes_proibidos):
+        novo_nome = input("Digite um nome de usuário válido: ")
+        return user_name(novo_nome, nomes_proibidos, nome_clientes)
+    elif nome_usuario in nome_clientes:
+        print("Nome em uso, tente novamente.")
+        novo_nome = input("Digite um nome de usuário válido: ")
+        return user_name(novo_nome, nomes_proibidos, nome_clientes)
+    else:
+        nome_clientes.append(nome_usuario)
+        return nome_usuario
            
         
 
