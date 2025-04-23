@@ -3,31 +3,31 @@ import threading
 print_lock = threading.Lock()
 encerrando = False
 nome_clientes = []
-nomes_proibidos = ["", "Server".lower()]
+nomes_proibidos = ["", "server", "Server", "SERVER", "servidor", "SERVIDOR", " "]
 
-# Verifica se o cliente enviou o comando para encerrar o chat
+# Checks if the client sent the exit command
 def verificar_msg_recebida(mensagem_recebida):
     return mensagem_recebida.strip().lower() == "exit chat"
 
-# Verifica se o servidor quer encerrar e confirma com o usuário
+# Checks if the server wants to end the chat and confirms with the user
 def verificar_msg_enviada(s, mensagem_enviada):
     global encerrando
     if mensagem_enviada.strip().lower() == "exit chat":
-        verifi = input("Are you sure you want to end this chat? To confirm type: <yes> ").strip().lower()
+        verifi = input("❗ Are you sure you want to end this chat? To confirm, type: <yes> ").strip().lower()
         if verifi == "yes":
             encerrando = True
-            print("Connection closed.")
+            print("🔒 Connection closed.")
             try:
                 s.send(mensagem_enviada.encode())
             except:
                 pass
             return True
         else:
-            print("Exit cancelled. Continuing chat...")
+            print("❌ Exit cancelled. Continuing chat...")
             return False
     return False
 
-# Thread responsável por receber mensagens do servidor
+# Thread responsible for receiving server messages
 def receber_mensagens(s):
     while True:
         try:
@@ -39,41 +39,34 @@ def receber_mensagens(s):
                 print("You: ", end="", flush=True)
         except:
             if not encerrando:
-                print("Error receiving message.")
+                print("⚠️ Error receiving message.")
             break
-        
-# Método responsável por exibir as mensagens automaticas correspondentes aos comandos utilizados no servidor
-def comandos(mensagem_recebida, s):
-    msg = mensagem_recebida.lower()
 
-    if msg == "<service>":
-        resposta = "You have accessed a chat server. Soon, new clients will be added to interact with you!"
-        try:
-            s.send(resposta.encode())
-        except:
-            print("Erro ao exibir mensagem de Serviços")
-            
-    elif msg == "<help>":
-        with print_lock:
-            print("\n📄 Available commands:")
-            print("  - exit chat : ends the conversation.")
-            print("  - Service   : see the current status of the chat server.")
-            print("  - Help      : show this help message.\n")
-            
-            
-def user_name (nome_usuario, nomes_proibidos, nome_clientes):
-    if (nome_usuario in nomes_proibidos):
-        novo_nome = input("Digite um nome de usuário válido: ")
+# Function to validate a unique and acceptable username
+def user_name(nome_usuario, nomes_proibidos, nome_clientes):
+    if nome_usuario in nomes_proibidos:
+        novo_nome = input("❗ Invalid username. Please enter a valid one: ")
         return user_name(novo_nome, nomes_proibidos, nome_clientes)
     elif nome_usuario in nome_clientes:
-        print("Nome em uso, tente novamente.")
-        novo_nome = input("Digite um nome de usuário válido: ")
+        print("⚠️ Username already in use. Try another.")
+        novo_nome = input("Please enter a valid username: ")
         return user_name(novo_nome, nomes_proibidos, nome_clientes)
     else:
         nome_clientes.append(nome_usuario)
         return nome_usuario
-           
-        
 
-# If client requests services, show a service message
-#conn.send("You have accessed a chat server. Soon, new clients will be added to interact with you!".encode()) if mensagem_recebida == "Serviços" else None
+# Handles automatic command responses from the server
+def comandos(mensagem_recebida, conn):
+    msg = mensagem_recebida.lower()
+
+    if msg == "<service>":
+        conn.send("🛠️ You have accessed a chat server. Soon, new clients will be able to interact with you!".encode())
+    elif msg == "<help>":
+        help_msg = """
+        [ AVAILABLE COMMANDS ]
+----------------------------------
+<Help>        → Show this help message.
+<Service>     → Display information about the server's services.
+<exit chat>   → Close your connection to the chat safely.     
+"""
+        conn.send(help_msg.encode())
