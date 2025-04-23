@@ -2,39 +2,43 @@ import socket
 import threading
 from utils import verificar_msg_enviada, receber_mensagens, user_name, nome_clientes, nomes_proibidos
 
-# Configuração de IP e porta
+# Server IP and port configuration
 ip = '127.0.0.1'  # localhost
 port = 3000
 
-# Criação do socket TCP
+# Create the TCP socket
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((ip, port))
 
-# Mensagem de boas-vindas do servidor
-mensagem_boas_vindas = s.recv(1024).decode()
-print(mensagem_boas_vindas)
+# Welcome message from the server
+welcome_message = s.recv(1024).decode()
+print("╭────────────────────────────────────────────╮")
+print(f"│ 📡 Server says: {welcome_message.strip()}")
+print("╰────────────────────────────────────────────╯\n")
 
-# Instruções para o usuário
-print("📌 Comandos disponíveis:")
-print("  - <Service>: saber quais serviços o servidor oferece.")
-print("  - <exit chat>: sair da sala de chat.\n")
+# Instructions for the user
+print("╭────────────────────────────────────────────────────╮")
+print("│ 📌 Type <help> to learn how to use the chat commands.")
+print("╰────────────────────────────────────────────────────╯\n")
 
-# Thread para receber mensagens do servidor
+# Thread to receive messages from the server
 thread_receber = threading.Thread(target=receber_mensagens, args=(s,))
 thread_receber.start()
-nome_user = input("Digite um nome de usuário válido: ")
+
+# Prompt for a valid username
+nome_user = input("Enter a valid username: ")
 verficar_nome = user_name(nome_user, nome_clientes, nomes_proibidos)
-    
-# Loop principal para envio de mensagens
+
+# Main message sending loop
 while True:
     try:
-        
-        mensagem_enviada = input(f"{verficar_nome}(You): ")
+        mensagem_enviada = input(f"{verficar_nome} (You): ")
         if verificar_msg_enviada(s, mensagem_enviada):
             break
         s.send(mensagem_enviada.encode())
     except:
         break
 
-# Encerramento da conexão
+# Close the connection
 s.close()
+print("\n🔌 Disconnected from the server. Goodbye!")
