@@ -2,39 +2,43 @@ import socket
 import threading
 from utils import verificar_msg_enviada, receber_mensagens, user_name, nome_clientes, nomes_proibidos
 
-# Configuração de IP e porta
-ip = '127.0.0.1'  # localhost
+# Server configuration
+ip = '127.0.0.1'
 port = 3000
 
-# Criação do socket TCP
+# Create TCP socket
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((ip, port))
 
-# Mensagem de boas-vindas do servidor
-mensagem_boas_vindas = s.recv(1024).decode()
-print("[Cliente 2] " + mensagem_boas_vindas)
+# Welcome message from server
+welcome_message = s.recv(1024).decode()
+print("╭──────────────────────────────╮")
+print(f"│ 📡 Server says: {welcome_message.strip()}")
+print("╰──────────────────────────────╯\n")
 
-# Instruções para o usuário
-print("📌 Comandos disponíveis:")
-print("  - <Service>: saber quais serviços o servidor oferece.")
-print("  - <exit chat>: sair da sala de chat.\n")
+# User instructions
+print("╭────────────────────────────────────────────────────╮")
+print("│ 📌 Type <help> to view available chat commands.")
+print("╰────────────────────────────────────────────────────╯\n")
 
-# Thread para receber mensagens
+# Thread to receive messages
 thread_receber = threading.Thread(target=receber_mensagens, args=(s,))
 thread_receber.start()
-nome_user = input("Digite um nome de usuário válido: ")
+
+# Request a username
+nome_user = input("Enter a valid username: ")
 verificar_nome = user_name(nome_user, nome_clientes, nomes_proibidos)
 
-
-# Loop principal de envio de mensagens
+# Main loop to send messages
 while True:
     try:
-        mensagem_enviada = input(f"{verificar_nome}(You): ")
+        mensagem_enviada = input(f"{verificar_nome} (You): ")
         if verificar_msg_enviada(s, mensagem_enviada):
             break
         s.send(mensagem_enviada.encode())
     except:
         break
 
-# Encerramento da conexão
+# Closing connection
 s.close()
+print("\n🔌 Disconnected from the server. Goodbye!")
