@@ -1,6 +1,6 @@
 import socket
 import threading
-from utils import verificar_msg_enviada, verificar_msg_recebida, comandos
+from utils import verificar_msg_enviada, verificar_msg_recebida, comandos, clientes_info
 
 # Server configuration
 ip = '127.0.0.1'
@@ -10,22 +10,23 @@ port = 3000
 print_lock = threading.Lock()
 clientes_lock = threading.Lock()
 
-# List of connected clients
-clientes = []
-
 # Send a message to all connected clients except the sender
 def broadcast(message, sender):
     with clientes_lock:
-        for client in clientes:
+        desconectados = []
+        for client in list(clientes_info.keys()):
             if client != sender:
                 try:
                     client.send(message.encode())
                 except:
                     client.close()
-                    clientes.remove(client)
+                    desconectados.append(client)
+        for client in desconectados:
+            del clientes_info[client]
 
 # Function to receive messages from a specific client
 def receive_client_messages(conn, addr):
+    nome_definido = False
     while True:
         try:
             received_message = conn.recv(1024).decode()
@@ -33,18 +34,40 @@ def receive_client_messages(conn, addr):
                 print(f"🔌 Connection closed by the client {addr}.")
                 break
 
+            # Primeira mensagem: nome do usuário
+            if not nome_definido:
+                if received_message.startswith("<username>:"):
+                    nome = received_message.split(":", 1)[1].strip()
+                    with clientes_lock:
+                        clientes_info[conn] = nome
+                    nome_definido = True
+                    continue
+                else:
+                    conn.send("❌ Invalid username format. Use <username>:your_name\n")
+                    continue
+
+            # Comandos especiais
             if received_message.lower() in ("<service>", "<help>"):
                 comandos(received_message, conn)
                 continue
 
             comandos(received_message, conn)
 
+            # Mostrar no servidor
             with print_lock:
-                print(f"\n🟢 Client {addr}: {received_message}")
+                print(f"\n🟢 {clientes_info.get(conn, addr)}: {received_message}")
                 print("You/Server: ", end="", flush=True)
 
-            broadcast_message = f"{addr[0]}:{addr[1]} says: {received_message}"
-            broadcast(broadcast_message, conn)
+            
+            # Enviar para os outros clientes
+            username = clientes_info.get(conn)
+            
+            if username:
+                mensagem_other_cl = f"@{username} says: {received_message}"
+            else:
+                mensagem_other_cl = f"\n Unknown says: {received_message}"
+                print(clientes_info)
+            broadcast(mensagem_other_cl, conn)
 
         except ConnectionResetError:
             print(f"\n⚠️ Client {addr} disconnected unexpectedly.")
@@ -53,8 +76,8 @@ def receive_client_messages(conn, addr):
             break
 
     with clientes_lock:
-        if conn in clientes:
-            clientes.remove(conn)
+        if conn in clientes_info:
+            del clientes_info[conn]
     conn.close()
 
 # Function for the server to send messages to a client
@@ -75,7 +98,7 @@ def handle_client(conn, addr):
     conn.send(b"Welcome to my TCP server, client!\n")
 
     with clientes_lock:
-        clientes.append(conn)
+        clientes_info[conn] = f"{addr[0]}:{addr[1]}"  # Placeholder, será substituído
 
     threading.Thread(target=receive_client_messages, args=(conn, addr)).start()
     threading.Thread(target=send_server_messages, args=(conn, addr)).start()

@@ -1,6 +1,6 @@
 import socket
 import threading
-from utils import verificar_msg_enviada, receber_mensagens, user_name, nome_clientes, nomes_proibidos
+from utils import verificar_msg_enviada, receber_mensagens, user_name, clientes_info, nomes_proibidos
 
 # Server IP and port configuration
 ip = '127.0.0.1'  # localhost
@@ -17,9 +17,9 @@ print(f"│ 📡 Server says: {welcome_message.strip()}")
 print("╰────────────────────────────────────────────╯\n")
 
 # Instructions for the user
-print("╭────────────────────────────────────────────────────╮")
+print("╭───────────────────────────────────────────────────────╮")
 print("│ 📌 Type <help> to learn how to use the chat commands.")
-print("╰────────────────────────────────────────────────────╯\n")
+print("╰───────────────────────────────────────────────────────╯\n")
 
 # Thread to receive messages from the server
 thread_receber = threading.Thread(target=receber_mensagens, args=(s,))
@@ -27,12 +27,12 @@ thread_receber.start()
 
 # Prompt for a valid username
 nome_user = input("Enter a valid username: ")
-verficar_nome = user_name(nome_user, nome_clientes, nomes_proibidos)
+user_name(nome_user, clientes_info, nomes_proibidos, s)
 
 # Main message sending loop
 while True:
     try:
-        mensagem_enviada = input(f"{verficar_nome} (You): ")
+        mensagem_enviada = input("(You): ")
         if verificar_msg_enviada(s, mensagem_enviada):
             break
         s.send(mensagem_enviada.encode())
