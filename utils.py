@@ -13,19 +13,14 @@ def verificar_msg_recebida(mensagem_recebida):
 def verificar_msg_enviada(s, mensagem_enviada):
     global encerrando
     if mensagem_enviada.strip().lower() == "exit chat":
-        verifi = input("❗ Are you sure you want to end this chat? To confirm, type: <yes> ").strip().lower()
-        if verifi == "yes":
-            encerrando = True
-            print("🔒 Connection closed.")
-            try:
-                s.send(mensagem_enviada.encode())
-            except:
-                pass
-            return True
-        else:
-            print("❌ Exit cancelled. Continuing chat...")
-            return False
-    return False
+        encerrando = True
+        print("🔒 Connection closed.")
+        try:
+            s.send(mensagem_enviada.encode())
+        except:
+            pass
+        return True
+    return False 
 
 # Thread responsible for receiving server messages
 def receber_mensagens(s):
@@ -34,9 +29,11 @@ def receber_mensagens(s):
             mensagem_recebida = s.recv(1024).decode()
             if verificar_msg_recebida(mensagem_recebida):
                 break
+           
+            
             with print_lock:
-                print(f"{mensagem_recebida}")
-                print( "(You): ", end="", flush=True)
+               print(f"✉️ {mensagem_recebida}")
+            
         except:
             if not encerrando:
                 print("⚠️ Error receiving message.")

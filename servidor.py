@@ -1,5 +1,6 @@
 import socket
 import threading
+import datetime
 from utils import verificar_msg_enviada, verificar_msg_recebida, comandos, clientes_info
 
 # Server configuration
@@ -9,6 +10,12 @@ port = 3000
 # Locks for thread safety
 print_lock = threading.Lock()
 clientes_lock = threading.Lock()
+
+def chat_log(username, mensagem):
+    with open("chat.txt", "a") as f:
+        data = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        f.write(f"[{data}]{username}:{mensagem}\n")
+    
 
 # Send a message to all connected clients except the sender
 def broadcast(message, sender):
