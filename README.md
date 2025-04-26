@@ -26,7 +26,7 @@ Um projeto simples de **chat em tempo real** utilizando **Python** com **sockets
 - [x] Permitir múltiplos clientes se conectarem ao mesmo tempo (uso de threads)
 - [ ] Interface gráfica (GUI) com Tkinter ou PyQt
 - [ ] Criptografia básica das mensagens com SSL ou biblioteca `cryptography`
-- [ ] Registro de logs de conversas
+- [x] Registro de logs de conversas
 - [x] Comando `/help` com lista de funcionalidades disponíveis
 - [x] Suporte a nomes de usuário personalizados
 - [x] Mensagens de sistema (ex: entrada/saída de usuários)
@@ -74,7 +74,7 @@ A simple real-time chat project using Python with TCP sockets.
 - [x] Allow multiple clients simultaneously (with threading)
 - [ ] GUI interface using Tkinter or PyQt
 - [ ] Basic encryption with SSL or `cryptography` lib
-- [ ] Chat log registration
+- [x] Chat log registration
 - [x] `/help` command for available features
 - [x] Support for custom usernames
 - [x] System messages (user joined/left notifications)
