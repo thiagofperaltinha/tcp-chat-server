@@ -16,9 +16,14 @@ s.connect((ip, port))
 public_key, private_key = gerar_chave()
 enviar_dados_tamanho(serialize_public_key(public_key), s)
 
-# Receber a chave pública do servidor
-receber_tam_men = receber_dados_tamanho(s)
-server_key = deserialize_public_key(receber_tam_men)
+try:
+    # Receber a chave pública do servidor
+    receber_tam_men = receber_dados_tamanho(s)
+    server_key = deserialize_public_key(receber_tam_men)
+except Exception as e:
+    print(f"❌ Erro ao receber a chave pública do servidor: {e}")
+    s.close()
+    exit(1)
 
 # Welcome message from the server
 welcome_message = s.recv(1024).decode()
@@ -48,7 +53,8 @@ while True:
         if msg_env:
             break
             
-        s.send(cripto_mesage(mensagem_enviada, server_key))
+        mensagem_criptografada = cripto_mesage(mensagem_enviada, server_key)
+        enviar_dados_tamanho(mensagem_criptografada, s)
         chat_log(verifi_nome, mensagem_enviada)
     except EOFError:
         break

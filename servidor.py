@@ -42,8 +42,13 @@ def receive_client_messages(conn, addr):
     nome_definido = False
     while True:
         try:
-            received_message = descripto_mesage(conn.recv(1024), private_key)
+            encrypted_data = receber_dados_tamanho(conn)
+            print(f"🔐 Dados recebidos do cliente: {encrypted_data}")
+           
+           
+            received_message = descripto_mesage(encrypted_data, private_keys)
             print(received_message)
+            
             if verificar_msg_recebida(received_message):
                 print(f"🔌 Connection closed by the client {addr}.")
                 break
@@ -83,32 +88,13 @@ def receive_client_messages(conn, addr):
                 print(clientes_info)
             broadcast(mensagem_other_cl, conn)
 
-        except ConnectionResetError:
-            print(f"\n⚠️ Client {addr} disconnected unexpectedly.")
-            break
-        except:
+        except Exception as e:
+            print(f"⚠️ Erro ao lidar com cliente {addr}: {e}")
             break
 
     with clientes_lock:
         if conn in clientes_info:
             del clientes_info[conn]
-    conn.close()
-
-# Function for the server to send messages to a client
-def send_server_messages(conn, addr):
-    while True:
-        try:
-            sent_message = input("You/Server: ")
-            if verificar_msg_enviada(conn, sent_message):
-                break
-            
-            if conn not in public_keys_clients:
-                print(f"❌ No public key found for {addr}, cannot send.")
-                continue
-
-            conn.send(cripto_mesage(sent_message, public_keys_clients[conn]))
-        except:
-            break
     conn.close()
 
 # Function to handle each connected client
@@ -120,7 +106,7 @@ def handle_client(conn, addr):
         clientes_info[conn] = f"{addr[0]}:{addr[1]}"  # Placeholder, será substituído
 
     threading.Thread(target=receive_client_messages, args=(conn, addr)).start()
-    threading.Thread(target=send_server_messages, args=(conn, addr)).start()
+
 
 # Start the server and wait for connections
 def main():
@@ -130,7 +116,6 @@ def main():
 
     print(f"🚀 Server started at {ip}:{port}\n📡 Waiting for connections...")
     
-
     while True:
         conn, addr = server_socket.accept()
         enviar_dados_tamanho(serialize_public_key(public_keys), conn)
