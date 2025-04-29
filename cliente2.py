@@ -1,7 +1,7 @@
 import socket
 import threading
 from utils import verificar_msg_enviada, receber_mensagens, user_name, clientes_info, nomes_proibidos
-
+from servidor import chat_log
 
 # Server configuration
 ip = '127.0.0.1'
@@ -28,18 +28,22 @@ thread_receber.start()
 
 # Request a username
 nome_user = input("Enter a valid username: ")
-user_name(nome_user, clientes_info, nomes_proibidos, s)
+verifi_nome = user_name(nome_user, clientes_info, nomes_proibidos, s)
 
 # Main loop to send messages
 while True:
     try:
-        mensagem_enviada = input("(You): ")
-        if verificar_msg_enviada(s, mensagem_enviada):
+        mensagem_enviada = input() 
+        msg_verifi = verificar_msg_enviada(s, mensagem_enviada)
+        if msg_verifi:
             break
+        
         s.send(mensagem_enviada.encode())
-    except:
+        chat_log(verifi_nome, mensagem_enviada )
+        
+    except Exception as e:
+        print(f" ERROR {e}")
         break
-
 # Closing connection
 s.close()
 print("\n🔌 Disconnected from the server. Goodbye!")

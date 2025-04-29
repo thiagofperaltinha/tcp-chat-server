@@ -1,7 +1,7 @@
 import socket
 import threading
 from utils import verificar_msg_enviada, receber_mensagens, user_name, clientes_info, nomes_proibidos
-
+from servidor import chat_log
 # Server IP and port configuration
 ip = '127.0.0.1'  # localhost
 port = 3000
@@ -27,16 +27,19 @@ thread_receber.start()
 
 # Prompt for a valid username
 nome_user = input("Enter a valid username: ")
-user_name(nome_user, clientes_info, nomes_proibidos, s)
-
+verifi_nome = user_name(nome_user, clientes_info, nomes_proibidos, s)
+booleano = True
 # Main message sending loop
 while True:
     try:
-        mensagem_enviada = input("(You): ")
-        if verificar_msg_enviada(s, mensagem_enviada):
+        mensagem_enviada = input()
+        msg_env = verificar_msg_enviada(s, mensagem_enviada)
+        if msg_env:
             break
+            
         s.send(mensagem_enviada.encode())
-    except:
+        chat_log(verifi_nome, mensagem_enviada)
+    except EOFError:
         break
 
 # Close the connection

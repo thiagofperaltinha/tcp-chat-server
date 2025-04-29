@@ -1,21 +1,25 @@
 import socket
 import threading
 import datetime
-from utils import verificar_msg_enviada, verificar_msg_recebida, comandos, clientes_info
+import rsa
+from utils.crypto import cripto_mesage, descripto_mesage, gerar_chave, serialize_public_key, deserialize_public_key
+from utils.cont_bytes import enviar_dados_tamanho, receber_dados_tamanho
+from u import verificar_msg_enviada, verificar_msg_recebida, comandos, clientes_info
+
+
+public_keys_clients = {}
 
 # Server configuration
 ip = '127.0.0.1'
 port = 3000
 
+public_keys, private_keys = gerar_chave()
+
 # Locks for thread safety
 print_lock = threading.Lock()
 clientes_lock = threading.Lock()
 
-def chat_log(username, mensagem):
-    with open("chat.txt", "a") as f:
-        data = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        f.write(f"[{data}]{username}:{mensagem}\n")
-    
+
 
 # Send a message to all connected clients except the sender
 def broadcast(message, sender):
@@ -24,7 +28,9 @@ def broadcast(message, sender):
         for client in list(clientes_info.keys()):
             if client != sender:
                 try:
-                    client.send(message.encode())
+                    mensagem_criptografada = rsa.encrypt(message.encode(), public_keys_clients[client])
+                    print(mensagem_criptografada)
+                    client.send(mensagem_criptografada)
                 except:
                     client.close()
                     desconectados.append(client)
@@ -36,7 +42,8 @@ def receive_client_messages(conn, addr):
     nome_definido = False
     while True:
         try:
-            received_message = conn.recv(1024).decode()
+            received_message = descripto_mesage(conn.recv(1024), private_key)
+            print(received_message)
             if verificar_msg_recebida(received_message):
                 print(f"🔌 Connection closed by the client {addr}.")
                 break
@@ -70,7 +77,7 @@ def receive_client_messages(conn, addr):
             username = clientes_info.get(conn)
             
             if username:
-                mensagem_other_cl = f"@{username} says: {received_message}"
+                mensagem_other_cl = f"User: @{username} says: {received_message}"
             else:
                 mensagem_other_cl = f"\n Unknown says: {received_message}"
                 print(clientes_info)
@@ -94,7 +101,12 @@ def send_server_messages(conn, addr):
             sent_message = input("You/Server: ")
             if verificar_msg_enviada(conn, sent_message):
                 break
-            conn.send(sent_message.encode())
+            
+            if conn not in public_keys_clients:
+                print(f"❌ No public key found for {addr}, cannot send.")
+                continue
+
+            conn.send(cripto_mesage(sent_message, public_keys_clients[conn]))
         except:
             break
     conn.close()
@@ -117,9 +129,16 @@ def main():
     server_socket.listen()
 
     print(f"🚀 Server started at {ip}:{port}\n📡 Waiting for connections...")
+    
 
     while True:
         conn, addr = server_socket.accept()
+        enviar_dados_tamanho(serialize_public_key(public_keys), conn)
+        
+        receber_tam_key = receber_dados_tamanho(conn)
+        print(f"Received public key:\n{receber_tam_key.decode()}")  # Verifique se a chave é PEM
+        public_keys_clients[conn] = deserialize_public_key(receber_tam_key)
+        
         thread = threading.Thread(target=handle_client, args=(conn, addr))
         thread.start()
 
