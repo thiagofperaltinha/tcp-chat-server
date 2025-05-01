@@ -1,5 +1,6 @@
 import threading
-from utils.crypto import descripto_mesage
+from utils.crypto import descripto_mesage, cripto_mesage
+from utils.cont_bytes import receber_dados_tamanho, enviar_dados_tamanho
 
 print_lock = threading.Lock()
 encerrando = False
@@ -27,7 +28,9 @@ def verificar_msg_enviada(s, mensagem_enviada):
 def receber_mensagens(s, private_key):
     while True:
         try:
-            mensagem_recebida = descripto_mesage(s.recv(1024), private_key)
+            
+            tam_dados = receber_dados_tamanho(s)
+            mensagem_recebida = descripto_mesage(tam_dados, private_key)
             if verificar_msg_recebida(mensagem_recebida):
                 break
             
@@ -40,7 +43,7 @@ def receber_mensagens(s, private_key):
             break
 
 # Function to validate a unique and acceptable username
-def user_name(nome_usuario, clientes_info, nomes_proibidos, s):
+def user_name(nome_usuario, clientes_info, nomes_proibidos, s, server_p_key):
     if (nome_usuario in nomes_proibidos) or not nome_usuario.strip():
         novo_nome = input("❗ Invalid username. Please enter a valid one: ")
         return user_name(novo_nome, nomes_proibidos, clientes_info, s)
@@ -49,7 +52,8 @@ def user_name(nome_usuario, clientes_info, nomes_proibidos, s):
         novo_nome = input("Please enter a valid username: ")
         return user_name(novo_nome, nomes_proibidos, clientes_info, s)
 
-    s.send(f"<username>:{nome_usuario}".encode())
+    mensagem_crip = cripto_mesage(f"<username>:{nome_usuario}", server_p_key)
+    enviar_dados_tamanho(mensagem_crip, s)
     clientes_info[s] = nome_usuario
     return nome_usuario
 
