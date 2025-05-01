@@ -6,7 +6,6 @@ from utils.crypto import cripto_mesage, descripto_mesage, gerar_chave, serialize
 from utils.cont_bytes import enviar_dados_tamanho, receber_dados_tamanho
 from u import verificar_msg_enviada, verificar_msg_recebida, comandos, clientes_info
 
-
 public_keys_clients = {}
 
 # Server configuration
@@ -19,8 +18,6 @@ public_keys, private_keys = gerar_chave()
 print_lock = threading.Lock()
 clientes_lock = threading.Lock()
 
-
-
 # Send a message to all connected clients except the sender
 def broadcast(message, sender):
     with clientes_lock:
@@ -29,7 +26,6 @@ def broadcast(message, sender):
             if client != sender:
                 try:
                     mensagem_criptografada = rsa.encrypt(message.encode(), public_keys_clients[client])
-                    print(mensagem_criptografada)
                     client.send(mensagem_criptografada)
                 except:
                     client.close()
@@ -45,9 +41,7 @@ def receive_client_messages(conn, addr):
             encrypted_data = receber_dados_tamanho(conn)
             print(f"🔐 Dados recebidos do cliente: {encrypted_data}")
            
-           
             received_message = descripto_mesage(encrypted_data, private_keys)
-            print(received_message)
             
             if verificar_msg_recebida(received_message):
                 print(f"🔌 Connection closed by the client {addr}.")
@@ -62,7 +56,9 @@ def receive_client_messages(conn, addr):
                     nome_definido = True
                     continue
                 else:
-                    conn.send("❌ Invalid username format. Use <username>:your_name\n")
+                    conn.send(enviar_dados_tamanho(
+                        cripto_mesage("❌ Invalid username format. Use <username>:your_name", public_keys_clients[conn])
+                    ))
                     continue
 
             # Comandos especiais
