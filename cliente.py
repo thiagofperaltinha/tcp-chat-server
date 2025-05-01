@@ -42,7 +42,7 @@ thread_receber.start()
 
 # Prompt for a valid username
 nome_user = input("Enter a valid username: ")
-verifi_nome = user_name(nome_user, clientes_info, nomes_proibidos, s)
+verifi_nome = user_name(nome_user, clientes_info, nomes_proibidos, s, server_key)
 booleano = True
 
 # Main message sending loop
