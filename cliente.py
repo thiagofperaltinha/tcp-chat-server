@@ -37,7 +37,7 @@ print("│ 📌 Type <help> to learn how to use the chat commands.")
 print("╰───────────────────────────────────────────────────────╯\n")
 
 # Thread to receive messages from the server
-thread_receber = threading.Thread(target=receber_mensagens, args=(s, private_key))
+thread_receber = threading.Thread(target=receber_mensagens, args=(s, private_key), daemon=True)
 thread_receber.start()
 
 # Prompt for a valid username
@@ -49,7 +49,7 @@ booleano = True
 while True:
     try:
         mensagem_enviada = input()
-        msg_env = verificar_msg_enviada(s, mensagem_enviada)
+        msg_env = verificar_msg_enviada(s, mensagem_enviada, server_key)
         if msg_env:
             break
             
