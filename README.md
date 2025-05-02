@@ -42,7 +42,6 @@ A simple real-time chat project using Python with TCP sockets.
 - [x] Support for custom usernames
 - [x] System messages (user joined/left notifications)
 - [ ] Better error handling and auto-reconnection
-- [ ] Implement a UDP version for learning comparison
 
 Portuguese version
 
@@ -79,6 +78,6 @@ Um projeto simples de **chat em tempo real** utilizando **Python** com **sockets
 - [x] Suporte a nomes de usuário personalizados
 - [x] Mensagens de sistema (ex: entrada/saída de usuários)
 - [ ] Melhor tratamento de erros e reconexão automática
-- [ ] Implementação da versão UDP para fins comparativos
+
 
 
