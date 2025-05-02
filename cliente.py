@@ -1,6 +1,9 @@
 import socket
 import threading
-from utils import verificar_msg_enviada, receber_mensagens, user_name, clientes_info, nomes_proibidos
+from u import verificar_msg_enviada, receber_mensagens, user_name, clientes_info, nomes_proibidos
+from utils.crypto import cripto_mesage, serialize_public_key, deserialize_public_key, gerar_chave
+from utils.log_chat import chat_log
+from utils.cont_bytes import enviar_dados_tamanho, receber_dados_tamanho
 
 # Server IP and port configuration
 ip = '127.0.0.1'  # localhost
@@ -9,6 +12,18 @@ port = 3000
 # Create the TCP socket
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((ip, port))
+
+public_key, private_key = gerar_chave()
+enviar_dados_tamanho(serialize_public_key(public_key), s)
+
+try:
+    # Receber a chave pública do servidor
+    receber_tam_men = receber_dados_tamanho(s)
+    server_key = deserialize_public_key(receber_tam_men)
+except Exception as e:
+    print(f"❌ Erro ao receber a chave pública do servidor: {e}")
+    s.close()
+    exit(1)
 
 # Welcome message from the server
 welcome_message = s.recv(1024).decode()
@@ -22,21 +37,26 @@ print("│ 📌 Type <help> to learn how to use the chat commands.")
 print("╰───────────────────────────────────────────────────────╯\n")
 
 # Thread to receive messages from the server
-thread_receber = threading.Thread(target=receber_mensagens, args=(s,))
+thread_receber = threading.Thread(target=receber_mensagens, args=(s, private_key), daemon=True)
 thread_receber.start()
 
 # Prompt for a valid username
 nome_user = input("Enter a valid username: ")
-user_name(nome_user, clientes_info, nomes_proibidos, s)
+verifi_nome = user_name(nome_user, clientes_info, nomes_proibidos, s, server_key)
+booleano = True
 
 # Main message sending loop
 while True:
     try:
-        mensagem_enviada = input("(You): ")
-        if verificar_msg_enviada(s, mensagem_enviada):
+        mensagem_enviada = input()
+        msg_env = verificar_msg_enviada(s, mensagem_enviada, server_key)
+        if msg_env:
             break
-        s.send(mensagem_enviada.encode())
-    except:
+            
+        mensagem_criptografada = cripto_mesage(mensagem_enviada, server_key)
+        enviar_dados_tamanho(mensagem_criptografada, s)
+        chat_log(verifi_nome, mensagem_enviada)
+    except EOFError:
         break
 
 # Close the connection
