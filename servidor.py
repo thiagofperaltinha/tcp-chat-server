@@ -26,8 +26,9 @@ def broadcast(message, sender):
             if client != sender:
                 try:
                     mensagem_criptografada = rsa.encrypt(message.encode(), public_keys_clients[client])
-                    client.send(mensagem_criptografada)
-                except:
+                    enviar_dados_tamanho(mensagem_criptografada, client)
+                except Exception as e:
+                    print(f"ERRO: {e}")
                     client.close()
                     desconectados.append(client)
         for client in desconectados:
@@ -38,9 +39,7 @@ def receive_client_messages(conn, addr):
     nome_definido = False
     while True:
         try:
-            encrypted_data = receber_dados_tamanho(conn)
-            print(f"🔐 Dados recebidos do cliente: {encrypted_data}")
-           
+            encrypted_data = receber_dados_tamanho(conn)       
             received_message = descripto_mesage(encrypted_data, private_keys)
             
             if verificar_msg_recebida(received_message):
@@ -63,25 +62,26 @@ def receive_client_messages(conn, addr):
 
             # Comandos especiais
             if received_message.lower() in ("<service>", "<help>"):
-                comandos(received_message, conn)
+                comandos(received_message, conn, public_keys_clients[conn])
                 continue
 
-            comandos(received_message, conn)
+            comandos(received_message, conn, public_keys_clients[conn])
 
             # Mostrar no servidor
             with print_lock:
                 print(f"\n🟢 {clientes_info.get(conn, addr)}: {received_message}")
                 print("You/Server: ", end="", flush=True)
 
-            
             # Enviar para os outros clientes
             username = clientes_info.get(conn)
-            
+           
             if username:
-                mensagem_other_cl = f"User: @{username} says: {received_message}"
+                mensagem_other_cl = f"@{username} says: {received_message}"
             else:
                 mensagem_other_cl = f"\n Unknown says: {received_message}"
                 print(clientes_info)
+          
+            print(f"Mensagem a ser enviada para os outros clientes: {mensagem_other_cl}")
             broadcast(mensagem_other_cl, conn)
 
         except Exception as e:
