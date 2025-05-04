@@ -6,15 +6,14 @@ A secure and lightweight real-time chat system built in Python using raw TCP soc
 
 ## ✨ Features
 
-- 🔒 End-to-end encryption using RSA for secure communication  
-- 🔁 Bidirectional real-time chat between server and multiple clients  
-- 🧠 Smart commands like `/help`, `/service` and username identification  
-- 👤 Custom usernames with name validation and blacklist support  
-- 📜 Chat logging to file for later reference  
-- 🧵 Multithreaded server — supports multiple clients simultaneously  
-- 🔌 Graceful disconnection using the `<exit chat>` command  
-- 📢 System messages on user join/leave events  
-- ⚠️ Improved error handling to keep sessions stable
+- End-to-end encryption using RSA for secure communication  
+- Bidirectional real-time chat between server and multiple clients  
+- Smart commands like `/help`, `/service` and username identification  
+- Custom usernames with name validation and blacklist support  
+- Chat logging to file for later reference  
+- Multithreaded server — supports multiple clients simultaneously  
+- Graceful disconnection using the `<exit chat>` command  
+- Improved error handling to keep sessions stable
 
 ## 🔐 Security
 
@@ -66,10 +65,14 @@ Um projeto simples de **chat em tempo real** utilizando **Python** com **sockets
 
 ## ✨ Funcionalidades
 
-- Comunicação bidirecional entre cliente e servidor
-- Troca de mensagens em tempo real
-- Comando especial `<exit chat>` para encerrar a conversa
-- Mensagem de boas-vindas e resposta a comandos como `<Service>`
+- Criptografia ponta-a-ponta com RSA para uma comunicação segura  
+- Chat bidirecional em tempo real entre servidor e múltiplos clientes  
+- Comandos inteligentes como `/help`, `/service` e identificação de usuários  
+- Suporte a nomes de usuário personalizados com validação e blacklist  
+- Registro de logs do chat em arquivo para referência futura  
+- Servidor multithread — suporta múltiplos clientes simultaneamente  
+- Desconexão graciosa usando o comando `<exit chat>`  
+- Tratamento de erros aprimorado para manter sessões estáveis
 
 ## 🛠 Tecnologias Utilizadas
 
