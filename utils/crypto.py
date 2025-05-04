@@ -1,4 +1,9 @@
 import rsa
+# Function generate key
+# Function cryptografy message
+# Function decryptografy message
+# Function serialize public key
+# Function deserialize public key
 
 def gerar_chave():
     public_key, private_key = rsa.newkeys(1024)

@@ -2,19 +2,26 @@ import threading
 from utils.crypto import descripto_mesage, cripto_mesage
 from utils.cont_bytes import receber_dados_tamanho, enviar_dados_tamanho
 
+# Lock to prevent concurrent terminal prints
 print_lock = threading.Lock()
+
+# Flag to indicate if the client is exiting
 encerrando = False
+
+# Dictionary to store client socket and corresponding username
 clientes_info = {}
+
+# List of forbidden usernames
 nomes_proibidos = ["", "server", "Server", "SERVER", "servidor", "SERVIDOR", " "]
 
-# Checks if the client sent the exit command
+# Checks if the client sent the command to exit the chat
 def verificar_msg_recebida(mensagem_recebida):    
-    return mensagem_recebida.lower() == "<exit chat>"
+    return mensagem_recebida.lower() == "exit chat*"
 
-# Checks if the server wants to end the chat and confirms with the user
+# Handles the exit command from the client and closes the connection
 def verificar_msg_enviada(s, mensagem_enviada, public_key_server):
     global encerrando
-    if mensagem_enviada.lower().strip() == "<exit chat>":
+    if mensagem_enviada.lower().strip() == "exit chat*":
         encerrando = True
         print("🔒 Connection closed.")
         try:
@@ -25,7 +32,7 @@ def verificar_msg_enviada(s, mensagem_enviada, public_key_server):
         return True
     return False 
 
-# Thread responsible for receiving server messages
+# Thread function to receive and display messages from the server
 def receber_mensagens(s, private_key):
     while True:
         try:
@@ -40,10 +47,10 @@ def receber_mensagens(s, private_key):
                 print(f"⚠️ Error receiving message: {e}")
             break
 
-# Function to validate a unique and acceptable username
+# Validates the user's name, ensuring it is not forbidden or already in use
 def user_name(nome_usuario, clientes_info, nomes_proibidos, s, server_p_key):
     if (nome_usuario in nomes_proibidos) or not nome_usuario.strip():
-        novo_nome = input("❗ Invalid username. Please enter a valid one: ")
+        novo_nome = input("⚠️ Invalid username. Please enter a valid one: ")
         return user_name(novo_nome, nomes_proibidos, clientes_info, s)
     if nome_usuario in clientes_info.values():
         print("⚠️ Username already in use. Try another.")
@@ -55,21 +62,26 @@ def user_name(nome_usuario, clientes_info, nomes_proibidos, s, server_p_key):
     clientes_info[s] = nome_usuario
     return nome_usuario
 
-# Handles automatic command responses from the server
+# Responds to basic server commands (service/help)
 def comandos(mensagem_recebida, conn, public_key):
     msg = mensagem_recebida.lower()
-    
-    if msg == "<service>":
-       service_msg = "🛠️ You have accessed a chat server. Soon, new clients will be able to interact with you!"
-       service_crip = cripto_mesage(service_msg, public_key)
-       enviar_dados_tamanho(service_crip, conn)
-    elif msg == "<help>":
-        help_msg = """
-        [ AVAILABLE COMMANDS ]
-----------------------------------
-<Help>        → Show this help message.
-<Service>     → Display information about the server's services.
-<exit chat>   → Close your connection to the chat safely.     
-"""
-        help_crip = cripto_mesage(help_msg, public_key)
-        enviar_dados_tamanho(help_crip, conn)
+    if msg == "service*":
+        service_msg = "🛠️ This is a secure chat server. More features coming soon!"
+        try:
+            service_crip = cripto_mesage(service_msg, public_key)
+            enviar_dados_tamanho(service_crip, conn)
+        except Exception as e:
+            print(f"ERROR while sending service* command: {e}")
+
+    elif msg == "help*":
+        help_msg = (
+            "[Commands]\n"
+            " Help*     → Show help.\n"
+            " Service*  → Server info.\n"
+            " exit chat*→ Disconnect."
+        )
+        try:
+            help_crip = cripto_mesage(help_msg, public_key)
+            enviar_dados_tamanho(help_crip, conn)
+        except Exception as e:
+            print(f"ERROR while sending help* command: {e}")

@@ -21,22 +21,22 @@ clientes_lock = threading.Lock()
 # Send a message to all connected clients except the sender
 def broadcast(message, sender):
     with clientes_lock:
-        desconectados = []
+        disconnected = []
         for client in list(clientes_info.keys()):
             if client != sender:
                 try:
-                    mensagem_criptografada = rsa.encrypt(message.encode(), public_keys_clients[client])
-                    enviar_dados_tamanho(mensagem_criptografada, client)
+                    encrypted_message = rsa.encrypt(message.encode(), public_keys_clients[client])
+                    enviar_dados_tamanho(encrypted_message, client)
                 except Exception as e:
-                    print(f"ERRO: {e}")
+                    print(f"ERROR: {e}")
                     client.close()
-                    desconectados.append(client)
-        for client in desconectados:
+                    disconnected.append(client)
+        for client in disconnected:
             del clientes_info[client]
 
 # Function to receive messages from a specific client
 def receive_client_messages(conn, addr):
-    nome_definido = False
+    name_set = False
     while True:
         try:
             encrypted_data = receber_dados_tamanho(conn)       
@@ -46,13 +46,13 @@ def receive_client_messages(conn, addr):
                 print(f"🔌 Connection closed by the client {addr}.")
                 break
 
-            # Primeira mensagem: nome do usuário
-            if not nome_definido:
+            # First message: username
+            if not name_set:
                 if received_message.startswith("<username>:"):
-                    nome = received_message.split(":", 1)[1].strip()
+                    name = received_message.split(":", 1)[1].strip()
                     with clientes_lock:
-                        clientes_info[conn] = nome
-                    nome_definido = True
+                        clientes_info[conn] = name
+                    name_set = True
                     continue
                 else:
                     conn.send(enviar_dados_tamanho(
@@ -60,32 +60,32 @@ def receive_client_messages(conn, addr):
                     ))
                     continue
 
-            # Comandos especiais
-            if received_message.lower() in ("<service>", "<help>"):
+            # Special messages
+            if received_message.lower() in ("service*", "help*"):
                 comandos(received_message, conn, public_keys_clients[conn])
                 continue
 
             comandos(received_message, conn, public_keys_clients[conn])
 
-            # Mostrar no servidor
+            # Send to the server
             with print_lock:
                 print(f"\n🟢 {clientes_info.get(conn, addr)}: {received_message}")
                 print("You/Server: ", end="", flush=True)
 
-            # Enviar para os outros clientes
+            # Send to other clients
             username = clientes_info.get(conn)
            
             if username:
-                mensagem_other_cl = f"@{username} says: {received_message}"
+                message_to_others = f"@{username} says: {received_message}"
             else:
-                mensagem_other_cl = f"\n Unknown says: {received_message}"
+                message_to_others = f"\n Unknown says: {received_message}"
                 print(clientes_info)
           
-            print(f"Mensagem a ser enviada para os outros clientes: {mensagem_other_cl}")
-            broadcast(mensagem_other_cl, conn)
+            print(f"Message to be sent to other clients: {message_to_others}")
+            broadcast(message_to_others, conn)
 
         except Exception as e:
-            print(f"⚠️ Erro ao lidar com cliente {addr}: {e}")
+            print(f"⚠️ Error while handling client {addr}: {e}")
             break
 
     with clientes_lock:
@@ -99,10 +99,9 @@ def handle_client(conn, addr):
     conn.send(b"Welcome to my TCP server, client!\n")
 
     with clientes_lock:
-        clientes_info[conn] = f"{addr[0]}:{addr[1]}"  # Placeholder, será substituído
+        clientes_info[conn] = f"{addr[0]}:{addr[1]}"  # Placeholder, will be replaced
 
     threading.Thread(target=receive_client_messages, args=(conn, addr)).start()
-
 
 # Start the server and wait for connections
 def main():
@@ -111,14 +110,13 @@ def main():
     server_socket.listen()
 
     print(f"🚀 Server started at {ip}:{port}\n📡 Waiting for connections...")
-    
+
     while True:
         conn, addr = server_socket.accept()
         enviar_dados_tamanho(serialize_public_key(public_keys), conn)
         
-        receber_tam_key = receber_dados_tamanho(conn)
-        print(f"Received public key:\n{receber_tam_key.decode()}")  # Verifique se a chave é PEM
-        public_keys_clients[conn] = deserialize_public_key(receber_tam_key)
+        receive_key_size = receber_dados_tamanho(conn)
+        public_keys_clients[conn] = deserialize_public_key(receive_key_size)
         
         thread = threading.Thread(target=handle_client, args=(conn, addr))
         thread.start()
