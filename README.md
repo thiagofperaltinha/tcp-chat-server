@@ -56,6 +56,7 @@ A secure and lightweight real-time chat system built in Python using raw TCP soc
 - [x] System messages (user joined/left notifications)
 - [x] Better error handling and auto-reconnection
 
+
 Portuguese version
 
 # 💬 Chat Client-Server Python
