@@ -2,17 +2,32 @@
 
 A simple real-time chat project using Python with TCP sockets.
 
-✨ Features
+A secure and lightweight real-time chat system built in Python using raw TCP sockets and RSA encryption.
 
-- Bidirectional communication between client and server
-- Real-time message exchange
-- Special command ` <exit chat> ` to end the conversation
-- Welcome message and response to commands like ` <Service> `
+## ✨ Features
+
+- 🔒 End-to-end encryption using RSA for secure communication  
+- 🔁 Bidirectional real-time chat between server and multiple clients  
+- 🧠 Smart commands like `/help`, `/service` and username identification  
+- 👤 Custom usernames with name validation and blacklist support  
+- 📜 Chat logging to file for later reference  
+- 🧵 Multithreaded server — supports multiple clients simultaneously  
+- 🔌 Graceful disconnection using the `<exit chat>` command  
+- 📢 System messages on user join/leave events  
+- ⚠️ Improved error handling to keep sessions stable
+
+## 🔐 Security
+
+- Public and private key pairs are generated per client and server session  
+- Messages are encrypted before being sent, using the server/client public key  
+- RSA-based encryption is handled with the `cryptography` library or `rsa` module
 
 🛠 Technologies Used
 
 - Python 3.x
 - Native `socket` module
+- - `rsa` library for encryption  
+- `threading` module for concurrency
 
 📦 How to Use
 
