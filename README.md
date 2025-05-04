@@ -45,7 +45,7 @@ A secure and lightweight real-time chat system built in Python using raw TCP soc
    python cliente.py
    ```
 
-🔧 Future Improvements
+## 🔧 Future Improvements
 
 - [x] Allow multiple clients simultaneously (with threading)
 - [ ] GUI interface using Tkinter or PyQt
@@ -102,7 +102,7 @@ Um sistema de chat em tempo real, seguro e leve, desenvolvido em Python utilizan
    python cliente.py
    ```
 
-🔧 Melhorias Futuras
+## 🔧 Melhorias Futuras
 
 - [x] Permitir múltiplos clientes se conectarem ao mesmo tempo (uso de threads)
 - [ ] Interface gráfica (GUI) com Tkinter ou PyQt
