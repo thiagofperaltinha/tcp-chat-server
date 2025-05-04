@@ -1,7 +1,6 @@
 # 💬 Chat Client-Server Python
 
 A simple real-time chat project using Python with TCP sockets.
-
 A secure and lightweight real-time chat system built in Python using raw TCP sockets and RSA encryption.
 
 ## ✨ Features
@@ -61,7 +60,7 @@ Portuguese version
 
 # 💬 Chat Client-Server Python
 
-Um projeto simples de **chat em tempo real** utilizando **Python** com **sockets TCP**.
+Um sistema de chat em tempo real, seguro e leve, desenvolvido em Python utilizando sockets TCP puros e criptografia RSA.
 
 ## ✨ Funcionalidades
 
