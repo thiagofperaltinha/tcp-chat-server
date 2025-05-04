@@ -74,6 +74,12 @@ Um sistema de chat em tempo real, seguro e leve, desenvolvido em Python utilizan
 - Desconexão graciosa usando o comando `<exit chat>`  
 - Tratamento de erros aprimorado para manter sessões estáveis
 
+## 🔐 Segurança
+
+- Pares de chaves públicas e privadas são gerados por sessão, tanto no cliente quanto no servidor
+- As mensagens são criptografadas antes do envio, utilizando a chave pública do servidor ou do cliente
+- A criptografia baseada em RSA é feita com a biblioteca cryptography ou o módulo rsa
+
 ## 🛠 Tecnologias Utilizadas
 
 - Python 3.x
