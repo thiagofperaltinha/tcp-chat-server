@@ -41,7 +41,7 @@ A simple real-time chat project using Python with TCP sockets.
 - [x] `/help` command for available features
 - [x] Support for custom usernames
 - [x] System messages (user joined/left notifications)
-- [ ] Better error handling and auto-reconnection
+- [x] Better error handling and auto-reconnection
 
 Portuguese version
 
@@ -77,7 +77,7 @@ Um projeto simples de **chat em tempo real** utilizando **Python** com **sockets
 - [x] Comando `/help` com lista de funcionalidades disponíveis
 - [x] Suporte a nomes de usuário personalizados
 - [x] Mensagens de sistema (ex: entrada/saída de usuários)
-- [ ] Melhor tratamento de erros e reconexão automática
+- [x] Melhor tratamento de erros e reconexão automática
 
 
 
