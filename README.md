@@ -84,6 +84,8 @@ Um sistema de chat em tempo real, seguro e leve, desenvolvido em Python utilizan
 
 - Python 3.x
 - Módulo `socket` (nativo)
+- - - `rsa` biblioteca para criptografia 
+- `threading` para permitir vários clientes conectados simultaneamente
 
 ## 📦 Como usar
 
