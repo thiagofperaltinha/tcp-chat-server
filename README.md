@@ -86,6 +86,16 @@ Um sistema de chat em tempo real, seguro e leve, desenvolvido em Python utilizan
    git clone https://github.com/thiagofperaltinha/tcp-chat-server
    cd chat-client-server-python
 
+2. Inicie o servidor:
+   ```bash
+   python servidor.py
+   ```
+
+3. Em outro/outros terminais inicie o cliente:
+   ```bash
+   python cliente.py
+   ```
+
 🔧 Melhorias Futuras
 
 - [x] Permitir múltiplos clientes se conectarem ao mesmo tempo (uso de threads)
